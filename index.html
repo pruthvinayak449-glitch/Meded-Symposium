@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MedEd Symposium</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: white;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      background: #020617;
+    }
+    header img {
+      width: 120px;
+      border-radius: 50%;
+    }
+    h1 {
+      margin: 10px 0 0 0;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .card:hover {
+      background: #334155;
+      transform: scale(1.05);
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 10px;
+    }
+    button.save {
+      margin-top: 10px;
+      background: #22c55e;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body><header>
+  <img src="logo.png" alt="MedEd Logo">
+  <h1>MedEd Symposium</h1>
+  <p>Your Personal Medical Learning Hub</p>
+</header><div id="home" class="container">
+  <div class="card" onclick="openSection('general')">General</div>
+  <div class="card" onclick="openSection('year1')">1st Year</div>
+  <div class="card" onclick="openSection('year2')">2nd Year</div>
+  <div class="card" onclick="openSection('year3')">3rd Year</div>
+  <div class="card" onclick="openSection('year4')">4th Year</div>
+  <div class="card" onclick="openSection('mcq')">MCQ Section</div>
+  <div class="card" onclick="openSection('cases')">Clinical Cases</div>
+</div><div id="content" style="display:none; padding:20px;"></div><script>
+function openSection(section) {
+  document.getElementById('home').style.display = 'none';
+
+  let notes = JSON.parse(localStorage.getItem(section)) || "";
+
+  document.getElementById('content').style.display = 'block';
+  document.getElementById('content').innerHTML = `
+    <h2>${section.toUpperCase()}</h2>
+    <button onclick="goHome()">⬅ Back</button>
+    <textarea id="noteInput">${notes}</textarea><br>
+<button class="save" onclick="saveNotes('${section}')">Save</button>
+
+`; }
+
+function saveNotes(section) { let data = document.getElementById('noteInput').value; localStorage.setItem(section, JSON.stringify(data)); alert('Saved successfully!'); }
+
+function goHome() { document.getElementById('home').style.display = 'grid'; document.getElementById('content').style.display = 'none'; }
+
+// MCQ SYSTEM WITH SCORE let score = 0; let attempted = 0;
+
+// MCQ SYSTEM const mcqs = { ortho: [ { question: "Most common site of osteochondroma?", options: ["Distal femur", "Skull", "Spine", "Pelvis"], answer: 0 } ], medicine: [ { question: "What is the most common cause of iron deficiency anemia?", options: ["Chronic blood loss", "Hemolysis", "Vitamin deficiency", "Bone marrow failure"], answer: 0 } ], surgery: [ { question: "Parkland formula is used in?", options: ["Fracture", "Burns", "Shock", "Sepsis"], answer: 1 } ] };
+
+function openSection(section) { document.getElementById('home').style.display = 'none';
+
+if(section === 'mcq') { loadMCQ(); return; }
+
+let notes = JSON.parse(localStorage.getItem(section)) || "";
+
+document.getElementById('content').style.display = 'block'; document.getElementById('content').innerHTML = <h2>${section.toUpperCase()}</h2> <button onclick="goHome()">⬅ Back</button> <textarea id="noteInput">${notes}</textarea> <br> <button class="save" onclick="saveNotes('${section}')">Save</button>; }
+
+function loadMCQ() { let html = `<h2>Select Subject</h2> <button onclick="goHome()">⬅ Back</button>
+
+  <div class="card" onclick="startMCQ('ortho')">Orthopedics</div>
+  <div class="card" onclick="startMCQ('medicine')">Medicine</div>
+  <div class="card" onclick="startMCQ('surgery')">Surgery</div>`;document.getElementById('content').style.display = 'block'; document.getElementById('content').innerHTML = html; }
+
+function startMCQ(subject) { score = 0; attempted = 0;
+
+let questions = mcqs[subject];
+
+let html = `<h2>${subject.toUpperCase()} MCQs</h2> <button onclick="loadMCQ()">⬅ Back</button>
+
+  <p id="score">Score: 0</p>`;questions.forEach((q, index) => { html += <div class="card"> <p>${q.question}</p>;
+
+q.options.forEach((opt, i) => {
+  html += `<button onclick="checkAnswerSubject('${subject}', ${index}, ${i}, this)">${opt}</button><br><br>`;
+});
+
+html += `</div>`;
+
+});
+
+document.getElementById('content').innerHTML = html; }
+
+function checkAnswerSubject(subject, qIndex, selected, btn) { attempted++;
+
+if(selected === mcqs[subject][qIndex].answer) { score++; btn.style.background = '#22c55e'; } else { btn.style.background = '#ef4444'; }
+
+document.getElementById('score').innerText = Score: ${score} / ${attempted}; }</p>`;
+
+q.options.forEach((opt, i) => {
+  html += `<button onclick="checkAnswer(${index}, ${i}, this)">${opt}</button><br><br>`;
+});
+
+html += `</div>`;
+
+});
+
+document.getElementById('content').style.display = 'block'; document.getElementById('content').innerHTML = html; }</p>`;
+
+q.options.forEach((opt, i) => {
+  html += `<button onclick="checkAnswer(${index}, ${i})">${opt}</button><br><br>`;
+});
+
+html += `</div>`;
+
+});
+
+document.getElementById('content').style.display = 'block'; document.getElementById('content').innerHTML = html; }
+
+function checkAnswer(qIndex, selected, btn) { attempted++;
+
+if(selected === mcqs[qIndex].answer) { score++; btn.style.background = '#22c55e'; } else { btn.style.background = '#ef4444'; }
+
+document.getElementById('score').innerText = Score: ${score} / ${attempted}; } else { alert('Wrong ❌'); } }
+
+function saveNotes(section) { let data = document.getElementById('noteInput').value; localStorage.setItem(section, JSON.stringify(data)); alert('Saved successfully!'); }
+
+function goHome() { document.getElementById('home').style.display = 'grid'; document.getElementById('content').style.display = 'none'; }
+
+// CLINICAL CASES const cases = [ { scenario: "A 25-year-old male presents with severe abdominal pain radiating to the back, vomiting, and elevated serum amylase.", question: "What is the most likely diagnosis?", answer: "Acute Pancreatitis" }, { scenario: "A 60-year-old patient presents with altered bowel habits, weight loss, and blood in stool.", question: "What is the probable diagnosis?", answer: "Carcinoma Colon" } ];
+
+function openSection(section) { document.getElementById('home').style.display = 'none';
+
+if(section === 'mcq') { loadMCQ(); return; }
+
+if(section === 'cases') { loadCases(); return; }
+
+let notes = JSON.parse(localStorage.getItem(section)) || "";
+
+document.getElementById('content').style.display = 'block'; document.getElementById('content').innerHTML = <h2>${section.toUpperCase()}</h2> <button onclick="goHome()">⬅ Back</button> <textarea id="noteInput">${notes}</textarea> <br> <button class="save" onclick="saveNotes('${section}')">Save</button>; }
+
+function loadCases() { let html = <h2>Clinical Cases</h2><button onclick="goHome()">⬅ Back</button>;
+
+cases.forEach((c, index) => { html += <div class="card"> <p><b>Case:</b> ${c.scenario}</p> <p><b>Question:</b> ${c.question}</p> <button onclick="showAnswer(${index})">Show Answer</button> <p id="ans${index}" style="display:none; margin-top:10px; color:#22c55e;"><b>Answer:</b> ${c.answer}</p> </div>; });
+
+document.getElementById('content').style.display = 'block'; document.getElementById('content').innerHTML = html; }
+
+function showAnswer(index) { document.getElementById('ans' + index).style.display = 'block'; }
+
+// MCQ SYSTEM const mcqs = [ { question: "What is the most common cause of iron deficiency anemia?", options: ["Chronic blood loss", "Hemolysis", "Vitamin deficiency", "Bone marrow failure"], answer: 0 }, { question: "Parkland formula is used in?", options: ["Fracture", "Burns", "Shock", "Sepsis"], answer: 1 } ];
+
+function loadMCQ() { let html = <h2>MCQ Section</h2><button onclick="goHome()">⬅ Back</button>;
+
+mcqs.forEach((q, index) => { html += <div class="card"> <p>${q.question}</p>;
+
+q.options.forEach((opt, i) => {
+  html += `<button onclick="checkAnswer(${index}, ${i})">${opt}</button><br><br>`;
+});
+
+html += `</div>`;
+
+});
+
+document.getElementById('content').style.display = 'block'; document.getElementById('content').innerHTML = html; }
+
+function checkAnswer(qIndex, selected) { if(selected === mcqs[qIndex].answer) { alert('Correct ✅'); } else { alert('Wrong ❌'); } }
+
+function saveNotes(section) { let data = document.getElementById('noteInput').value; localStorage.setItem(section, JSON.stringify(data)); alert('Saved successfully!'); }
+
+function goHome() { document.getElementById('home').style.display = 'grid'; document.getElementById('content').style.display = 'none'; }
+
+</script></body>
+</html>
